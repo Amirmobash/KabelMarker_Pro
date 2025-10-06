@@ -1,4 +1,4 @@
-# KabelMarker Pro
+# servo Pro
 Fast cable marker controller on **ESP8266** with on-device web UI.  
 _No external app required. Just connect to the AP and press **MARK**._
 
