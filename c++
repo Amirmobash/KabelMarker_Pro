@@ -1,7 +1,7 @@
 // KabelMarker Pro — ESP8266 (NodeMCU / Wemos D1 mini)
 // Autor:         Amir Mobasheraghdam
 // Datum:         2025-03-21
-// Version:       2.0 (optimiert und lokalisiert)
+// Version:       2.0 (optimiert, vollständig lokalisiert)
 // Beschreibung:  Bewegt einen Servo (Marker) per Web-Button oder externem Taster (D7 gegen GND).
 //                Start- und Endwinkel sowie Geschwindigkeit sind über Konstanten anpassbar.
 
