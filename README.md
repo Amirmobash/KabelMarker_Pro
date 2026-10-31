@@ -1,103 +1,51 @@
-# KabelMarker Pro  
-**Fast cable marker controller on ESP8266 with on‑device web UI**  
-*No external app required — just connect to the AP and press **MARK***  
+# KabelMarker Pro — ESP8266 servo marker
 
-> **Ownership** – Embedded in source & assets: **#Amir Mobasheraghdam**
+An ESP8266 access-point controller with an embedded web button, a physical trigger and a servo marking cycle. Design and code: **Amir Mobasheraghdam**. The committed source is named **`c++`**, not `KabelMarker_Pro.ino`.
 
----
+## Reproducible build
 
-## 🇬🇧 English
+Install Python 3 and **Arduino CLI 1.3.1**, then run from this repository:
 
-### Features
-- Standalone Wi‑Fi Access Point (open) for instant access  
-- Large, mobile‑first UI (iPhone‑ready)  
-- Fast servo motion with adaptive stepping  
-- Audible confirmation tones on completion  
-- Physical trigger via D7–GND (button or relay)  
+```bash
+python3 tools/check_firmware.py --install
+```
 
-### Hardware
-| Component | Pin |
-|-----------|-----|
-| Servo signal | D5 |
-| Buzzer | D6 |
-| Status LED | Built‑in |
-| External trigger (NO to GND) | D7 |
-| Power & GND | Common with servo supply |
+The helper installs `esp8266:esp8266@3.1.2` and the libraries bundled with the core. It compiles these alternatives
+separately in temporary folders, without uploading or rewriting the originals:
 
-### Build & Upload
-1. **Arduino IDE** → Install ESP8266 core (Board Manager URL: `http://arduino.esp8266.com/stable/package_esp8266com_index.json`).  
-2. Install **ESP8266 LittleFS Data Upload** tool (available via Library Manager).  
-3. Libraries needed: `ESP8266WiFi`, `ESP8266WebServer`, `Servo` (bundled).  
-4. Open `KabelMarker_Pro.ino`.  
-5. Tools → Board: select your ESP8266 board (e.g. *LOLIN(WEMOS) D1 mini*).  
-6. **Upload Sketch**.  
-7. **Upload LittleFS Data** (this copies the `data/` folder to the SPIFFS/LittleFS partition).  
+- `c++`
 
-### Usage
-1. Power the device.  
-2. Connect to Wi‑Fi: **KabelMarker_Pro** (open network).  
-3. Visit **http://192.168.4.1** in any browser.  
-4. Press **MARK**. The servo moves from **20° → 110°** (adjustable), holds, and returns.  
-5. A buzzer melody confirms completion.  
+Build target: `esp8266:esp8266:nodemcuv2`. Once dependencies are installed, omit `--install`
+to build offline. `--jobs 2` is the default. Set `ARDUINO_CLI` to a CLI executable
+or wrapper when using a custom Arduino configuration. Exact build inputs are in
+[`tools/firmware.json`](tools/firmware.json). Library dependencies are listed
+explicitly and installed with `--no-deps` so transitive updates cannot silently
+replace the pinned versions. These are tested build versions, not a claim that
+all other core/library versions are incompatible.
 
-### Tuning
-Edit these constants in the sketch:
-- `DEFAULT_START_ANGLE` – home position  
-- `DEFAULT_END_ANGLE` – marking position  
-- `HOLD_TIME` – dwell time at end angle (ms)  
-- `DEFAULT_SPEED` – currently fixed; stepping rate is defined by `SERVO_UPDATE_INTERVAL`
+The GitHub Actions workflow repeats the firmware checks on pushes and pull
+requests. Compilation validates software/toolchain compatibility; it does not
+establish hardware safety or successful physical operation.
 
-### Credits
-- Design & code fingerprint embedded: **#Amir Mobasheraghdam**
+## Signal assignments
 
----
+![Source-derived pin map](docs/wiring.svg)
 
-## 🇩🇪 Deutsch
+| Signal | Board pin |
+| --- | --- |
+| Servo signal | D5 / GPIO14 |
+| Buzzer | D6 / GPIO12 |
+| Physical trigger | D7 / GPIO13 |
+| Status LED | LED_BUILTIN (NodeMCU GPIO2) |
 
-### Funktionen
-- Eigenständiger Wi‑Fi Access Point (offen) für sofortigen Zugriff  
-- Große, mobile‑optimierte Oberfläche (iPhone‑tauglich)  
-- Schnelle Servobewegung mit adaptiver Schrittsteuerung  
-- Akustische Bestätigung nach Abschluss  
-- Physischer Trigger über D7–GND (Taster oder Relais)  
+## Operation and validation limits
 
-### Hardware
-| Komponente | Pin |
-|------------|-----|
-| Servo‑Signal | D5 |
-| Summer | D6 |
-| Status‑LED | eingebaut |
-| Externer Taster (NO gegen GND) | D7 |
-| Strom & GND | gemeinsam mit Servo‑Versorgung |
+The trigger is a normally open contact to GND using `INPUT_PULLUP` and a falling-edge interrupt. Board aliases shown are for the selected NodeMCU build target; check other boards separately. The servo requires a correctly rated supply and signal interface. A GPIO is not a motor power source.
 
-### Kompilieren & Hochladen
-1. **Arduino IDE** → ESP8266‑Core installieren (Board‑Manager‑URL: `http://arduino.esp8266.com/stable/package_esp8266com_index.json`).  
-2. **ESP8266 LittleFS Data Upload**‑Tool installieren (über Bibliotheksverwalter).  
-3. Benötigte Bibliotheken: `ESP8266WiFi`, `ESP8266WebServer`, `Servo` (im Core enthalten).  
-4. `KabelMarker_Pro.ino` öffnen.  
-5. Werkzeuge → Board: das passende ESP8266‑Board auswählen (z. B. *LOLIN(WEMOS) D1 mini*).  
-6. **Sketch hochladen**.  
-7. **LittleFS‑Daten hochladen** (dies überträgt den Ordner `data/` in das LittleFS‑Dateisystem).  
+For Arduino IDE, copy `c++` to `KabelMarker_Pro/KabelMarker_Pro.ino`. WiFi, WebServer and Servo come with the ESP8266 core. The complete HTML is embedded in the source: **there is no `data/` directory and no LittleFS upload is required**.
 
-### Bedienung
-1. Gerät mit Strom versorgen.  
-2. Mit dem WLAN **KabelMarker_Pro** (offenes Netzwerk) verbinden.  
-3. Im Browser **http://192.168.4.1** aufrufen.  
-4. Auf **MARKIEREN** klicken. Der Servo bewegt sich von **20° → 110°** (einstellbar), hält und kehrt zurück.  
-5. Eine Summer‑Melodie bestätigt das Ende.  
+Connect to the open **KabelMarker_Pro** AP and use the IP printed at **115200 baud** (normally http://192.168.4.1/). The existing GET `/move` endpoint can move the servo; the controller has no authentication. Use only in a controlled local environment. The source defaults to 20°→110°→20°, a 140 ms hold and 6 ms stepping; `DEFAULT_SPEED` does not control stepping. No angle, trigger or movement behavior is changed here. Repeated web/physical triggers and mechanical travel require bench verification before attachment to a mechanism.
 
-### Anpassung
-Folgende Konstanten im Sketch können geändert werden:
-- `DEFAULT_START_ANGLE` – Ausgangsposition  
-- `DEFAULT_END_ANGLE` – Markierposition  
-- `HOLD_TIME` – Verweilzeit in Endposition (ms)  
-- `DEFAULT_SPEED` – aktuell fest; Schrittgeschwindigkeit wird über `SERVO_UPDATE_INTERVAL` gesteuert
-
-### Credits
-- Design & Code‑Fingerprint eingebettet: **#Amir Mobasheraghdam**
-
----
-
-## License & Attribution
-This project is open‑source. Please retain the original author credits.  
-**#Amir Mobasheraghdam** – *KabelMarker Pro*
+No physical testing, new hardware photographs or measured electrical/optical
+performance is claimed. Retain the author attribution and existing license/source
+notices when reusing the project.
