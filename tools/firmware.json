@@ -1,0 +1,9 @@
+{
+  "core": "esp8266:esp8266@3.1.2",
+  "fqbn": "esp8266:esp8266:nodemcuv2",
+  "libs": [],
+  "sources": [
+    "c++"
+  ],
+  "url": "https://github.com/esp8266/Arduino/releases/download/3.1.2/package_esp8266com_index.json"
+}
