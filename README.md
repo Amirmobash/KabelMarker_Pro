@@ -49,3 +49,7 @@ Connect to the open **KabelMarker_Pro** AP and use the IP printed at **115200 ba
 No physical testing, new hardware photographs or measured electrical/optical
 performance is claimed. Retain the author attribution and existing license/source
 notices when reusing the project.
+
+## License
+
+This project is open-source. Please retain the original author credits. **#Amir Mobasheraghdam** — KabelMarker Pro.
