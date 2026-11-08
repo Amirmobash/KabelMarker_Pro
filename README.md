@@ -1,5 +1,11 @@
 # KabelMarker Pro — ESP8266 servo marker
 
+
+<p align="center"><img src="docs/images/esp8266-web-servo-cable-marker-concept.svg" alt="ESP8266 access point triggered cable marking servo controller" width="960" /></p>
+
+<sub>Illustrative project schematic; not an actual CAD export, hardware photograph, or independently tested result.</sub>
+
+
 An ESP8266 access-point controller with an embedded web button, a physical trigger and a servo marking cycle. Design and code: **Amir Mobasheraghdam**. The committed source is named **`c++`**, not `KabelMarker_Pro.ino`.
 
 ## Reproducible build
